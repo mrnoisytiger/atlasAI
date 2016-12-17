@@ -19,5 +19,4 @@ require 'api_extensions/weather.php';
 
     }
 
-
 ?>
