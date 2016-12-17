@@ -1,0 +1,12 @@
+// Include Mixins
+    @import "mixins/text_center";
+
+// Include Helpers
+    @import "helpers/page";
+
+// Include Sections
+    @import "sections/intro";
+
+// Include Components
+    @import "components/intro_text";
+    @import "components/display_whiteboard";

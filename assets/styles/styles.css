@@ -1,0 +1,41 @@
+/* line 1, /Users/felixjen/Development/Atlas/assets/styles/helpers/_page.scss */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden; }
+
+/* line 1, /Users/felixjen/Development/Atlas/assets/styles/sections/_intro.scss */
+#intro {
+  height: 100%;
+  width: 100%; }
+
+/* line 1, /Users/felixjen/Development/Atlas/assets/styles/components/_intro_text.scss */
+#intro h1 {
+  position: absolute;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  font-size: 5em;
+  font-family: sans-serif; }
+
+/* line 1, /Users/felixjen/Development/Atlas/assets/styles/components/_display_whiteboard.scss */
+#displayable {
+  height: 100vh;
+  width: 100%;
+  background-color: white;
+  z-index: 20; }
+
+/* line 8, /Users/felixjen/Development/Atlas/assets/styles/components/_display_whiteboard.scss */
+#displayable #whiteboard {
+  display: none;
+  width: 100%;
+  height: 100%; }
+
+/* line 14, /Users/felixjen/Development/Atlas/assets/styles/components/_display_whiteboard.scss */
+.aww-modal-indicator {
+  display: none; }
+
+/*# sourceMappingURL=styles.css.map */

@@ -1,0 +1,6 @@
+@mixin text-center() {
+    position: absolute;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+}

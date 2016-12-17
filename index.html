@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <!-- Link Stylesheets -->
+        <link rel="stylesheet" type="text/css" href="assets/styles/styles.css">
+
+        <!-- Link External Resources -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+        <!-- Link External Applications -->
+
+        <!-- Link Javascript Connectors -->
+        <script src="assets/scripts/connectors/connector_smallTalk.js"></script>
+        <script src="assets/scripts/connectors/connectors_onscreenDisplay.js"></script>
+        <script src="assets/scripts/connectors/connectors_whiteboard.js"></script>
+        <script src="assets/scripts/connectors/connectors_weather.js"></script>
+
+        <!-- Link Javascript Functions -->
+        <script src="assets/scripts/functions/speech_synth.js"></script>
+        <script src="assets/scripts/functions/play_audio.js"></script>
+        <script src="assets/scripts/functions/gen_rand_string.js"></script>
+        <script src="assets/scripts/functions/gen_rand_num.js"></script>
+
+        <!-- Link Core Javascript -->
+        <script src="assets/scripts/pickConnector.js"></script>
+        <script src="assets/scripts/sendToProcess.js"></script>
+        <script src="assets/scripts/cmd_listener.js"></script>
+        <script src="assets/scripts/speech.js"></script>
+        <script src="assets/scripts/intro.js"></script>
+
+        <!-- Page Meta -->
+        <title>Atlas: Meet Me</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+
+    <body>
+        <main>
+
+            <!-- Introduction when first starting Atlas -->
+            <div id="intro">
+                <h1>Hi.</h1>
+                <h1>I'm Atlas.</h1>
+                <h1 id="intro_end">Say "Hey Atlas!"</h1>
+            </div>
+
+            <!-- Results for the initial recognition -->
+            <div id="results_area">
+                <p id="recog_results"></p>
+            </div>
+
+            <!-- Results for the command -->
+            <div id="command_area">
+                <p id="command_results"></p>
+            </div>
+
+            <div id="displayable">
+                <iframe src="https://awwapp.com" height="100%" width="100%" id="whiteboard"></iframe>
+            </div>
+        </main>
+    </body>
+
+</html>

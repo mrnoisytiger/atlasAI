@@ -1,0 +1,5 @@
+#intro h1 {
+    @include text-center();
+    font-size: 5em;
+    font-family: sans-serif;
+}
