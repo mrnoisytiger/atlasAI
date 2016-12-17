@@ -12,4 +12,4 @@ The API Extensions often communicate with third-party API's which require authen
 
 ## Why This is Open-Source
 
-This project has finally been made open-source because I'm tired of managing my own development server. 
+This project has finally been made open-source because I'm tired of managing my own development server. Also because I wanted to try out Codaid which is pretty pointless if I have a development server already. 
