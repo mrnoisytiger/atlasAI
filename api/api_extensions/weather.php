@@ -62,7 +62,7 @@ require 'language_structures/weather_conditions.php';
                     break;
 
                 default:
-                    return "what...";
+                    return "Weather type not available yet!";
             }
         }
 

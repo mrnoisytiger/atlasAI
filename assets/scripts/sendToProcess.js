@@ -30,7 +30,7 @@ function sendToProcess() {
         },
 
         error: function(data) {
-            speech_synth("Sorry, we are having some issues right now!");
+            speech_synth("Sorry, processing failed");
         }
 
     });
