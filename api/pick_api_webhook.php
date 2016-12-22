@@ -2,23 +2,27 @@
 
 	// Requires for extensions
 	require 'api_extensions/weather.php';
+	require 'api_extensions/stock_info.php';
 	require 'functions/genRandString.php';
 	require 'functions/slackOutput.php';
-	
-	// Get POST Data from Slack
-	$token = $_POST['token'];
-	$text = $_POST['text'];
+	require 'functions/removeDoubleBslash.php';
 	
 	### LEAVE THIS COMMENTED OUT EXCEPT FOR DEBUG ###
 	// Use Debug GET Data
-/*	$token = $_GET['token'];
+/*	$token = $_GET['token']; 
 	$text = $_GET['text']; 
 	$text = htmlspecialchars_decode($text); */
+	
+	// Get POST Data from Slack 
+	$token = $_POST['token'];
+	$text = $_POST['text']; 
 	
 	// Normalize Text Query
 		$trigger_words = array(
 			"hey atlas",
 			"hi atlas",
+			"hi",
+			"hey",
 			".",
 		);
 		// Take any "trigger words" out of the command string and remove any starting/trailing white-space
@@ -91,6 +95,13 @@
             $result = extension_weather($intentObject);
             echo slackOutput($result);
             break;
+            
+        case "getStockInfo":
+        	$result = extension_stockInfo($intentObject);
+        	$result = (string)slackOutput($result, "attachment");
+        	echo $result;
+        	break;
+        	
 
 		case "input.unknown";
 			$result = "Sorry! I can't do that!";

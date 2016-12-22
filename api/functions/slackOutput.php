@@ -1,11 +1,18 @@
 <?php 
 
-	function slackOutput( $output ) {
+	function slackOutput( $output, $type = "text" ) {
 		
-		$slack_output = array(
+		if ( $type == "text" ) {
+			$slack_output = array(
             	'text' => $output,
-        );
-        echo json_encode($slack_output);
+    		);
+		} elseif ( $type == "attachment" ) {
+			$slack_output = array(
+            	'attachments' => $output,
+        	);
+		}
+
+        return json_encode($slack_output);
 		
 	}
 
