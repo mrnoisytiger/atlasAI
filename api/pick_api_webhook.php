@@ -98,7 +98,11 @@
             
         case "getStockInfo":
         	$result = extension_stockInfo($intentObject);
-        	$result = (string)slackOutput($result, "attachment");
+        	if ( $result[1] == true ) {
+        		$result = (string)slackOutput($result[0], "attachment");
+        	} else {
+        		$result = (string)slackOutput($result[0], "text");
+        	}
         	echo $result;
         	break;
         	
