@@ -1,1 +1,5 @@
+# Ignore htaccess files
 .htaccess
+
+# Ignore config.ini files as they contain private info
+config.ini
