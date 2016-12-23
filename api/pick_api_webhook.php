@@ -7,16 +7,21 @@
 	require 'functions/slackOutput.php';
 	require 'functions/removeDoubleBslash.php';
 	
-	### LEAVE THIS COMMENTED OUT EXCEPT FOR DEBUG ###
-	// Use Debug GET Data
-/*	$token = $_GET['token']; 
-	$text = $_GET['text']; 
-	$text = htmlspecialchars_decode($text); */
+	// If debugging is set to true, use the info from a GET query instead of the POST query so it's easier to test
+	if ( $_GET['debug'] == 'true' ) {
+		// Use Debug GET Data
+		$token = $_GET['token']; 
+		$text = $_GET['text']; 
+		$text = htmlspecialchars_decode($text); 
+	} else {
+		// Get POST Data from Slack 
+		$token = $_POST['token'];
+		$text = $_POST['text']; 
+		$user_id = $_POST['user_id'];
+	}
 	
-	// Get POST Data from Slack 
-	$token = $_POST['token'];
-	$text = $_POST['text']; 
-	
+	### PROBABLY NOT NEEDED BECAUSE OF USING USER ID AUTHENTICATION ###
+	/*
 	// Normalize Text Query
 		$trigger_words = array(
 			"hey atlas",
@@ -26,11 +31,13 @@
 			".",
 		);
 		// Take any "trigger words" out of the command string and remove any starting/trailing white-space
-		$text = trim(str_ireplace($trigger_words, "", $text));
+		$text = trim(str_ireplace($trigger_words, "", $text)); 
+	*/
 	
 	// Set environment variables as needed
 	$slack_token = getenv('SLACK_TOKEN');
 	$apiai_key = getenv('APIAI_KEY');
+	$valid_user_ids = explode(",", getenv('VALID_USER_IDS'));
 	$query_url = "https://api.api.ai/v1/";
 	$query_version = "query?v=20161117";
 	$session_id = genRandString(10);
@@ -39,7 +46,12 @@
 	
 	// Check to make sure token does come from the correct Slack webhook
 	if ( $token !== $slack_token ) {
-		echo "Token Incorrect";
+		return "Token Incorrect";
+		die;
+	}
+	
+	if ( $_GET['debug'] !== 'true' && !in_array($user_id, $valid_user_ids)) {
+		return "User not Authenticated";
 		die;
 	}
 	
