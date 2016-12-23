@@ -32,7 +32,7 @@ Well, in your actual deployment, change the URL in "/assets/scripts/connectors/c
 
 Here's an example Apache configuration because it seems like everyone gives one. If you use a different web server, you are on your own. You can figure it out. There isn't really much to it.
 
-This example assumes you have a folder called "atlas" with this repo inside of "/var/www/html". If you don't, adapt the configuration to reflect your environment. That's not my job. 
+This example assumes you have a folder called "atlas" with this repo inside of "/var/www/html". If you don't, adapt the configuration to reflect your environment. That's not my job. Also, change the "ServerName" to be your own URL. Please don't use "atlas.example.com" and come to me saying it doesn't work. 
 
 ```
 <VirtualHost *:80>
