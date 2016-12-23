@@ -35,9 +35,10 @@
 	*/
 	
 	// Set environment variables as needed
-	$slack_token = getenv('SLACK_TOKEN');
-	$apiai_key = getenv('APIAI_KEY');
-	$valid_user_ids = explode(",", getenv('VALID_USER_IDS'));
+	$envvars = parse_ini_file ( "/api/config/config.ini" );
+	$slack_token = $envvars['SLACK_TOKEN'];
+	$apiai_key = $envvars['APIAI_KEY'];
+	$valid_user_ids = $envvars['VALID_USER_IDS'];
 	$query_url = "https://api.api.ai/v1/";
 	$query_version = "query?v=20161117";
 	$session_id = genRandString(10);

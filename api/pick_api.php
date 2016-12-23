@@ -7,6 +7,8 @@
 	require 'functions/slackOutput.php';
 	require 'functions/removeDoubleBslash.php';
 
+	$envvars = parse_ini_file ( "/api/config/config.ini" );
+		
     $intentObject = $_POST["intentObject"];
 
     $intentAction = $intentObject['result']['action'];

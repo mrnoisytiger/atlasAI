@@ -5,7 +5,7 @@ require 'language_structures/weather_conditions.php';
 
     function extension_weather($intentObject) {
     	
-    	$api_key = getenv('OPENWEATHERMAP_KEY');
+    	$api_key = $envvars['OPENWEATHERMAP_KEY'];
 
         $intentObjectResults = $intentObject['result']['parameters'];
 
