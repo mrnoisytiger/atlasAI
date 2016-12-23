@@ -3,3 +3,6 @@
 
 # Ignore config.ini files as they contain private info
 config.ini
+
+# Ignore certain development files
+php_info.php
