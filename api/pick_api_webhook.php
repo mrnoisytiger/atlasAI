@@ -35,7 +35,7 @@
 	*/
 	
 	// Set environment variables as needed
-	$envvars = parse_ini_file ( "/api/config/config.ini" );
+	$envvars = parse_ini_file( "config/config.ini" );
 	$slack_token = $envvars['SLACK_TOKEN'];
 	$apiai_key = $envvars['APIAI_KEY'];
 	$valid_user_ids = $envvars['VALID_USER_IDS'];
