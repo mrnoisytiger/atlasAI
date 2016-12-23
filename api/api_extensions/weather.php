@@ -4,6 +4,8 @@
 require 'language_structures/weather_conditions.php';
 
     function extension_weather($intentObject) {
+    	
+    	$api_key = getenv('OPENWEATHERMAP_KEY');
 
         $intentObjectResults = $intentObject['result']['parameters'];
 
@@ -40,7 +42,7 @@ require 'language_structures/weather_conditions.php';
         }
 
         if ( $current = true ) {
-            $api_url = "http://api.openweathermap.org/data/2.5/find?q=" . htmlspecialchars($weather_location) . ",us" . "&units=imperial&appid=c4b33a3094db0deb91505e337a778537";
+            $api_url = "http://api.openweathermap.org/data/2.5/find?q=" . htmlspecialchars($weather_location) . ",us" . "&units=imperial&appid=" . $api_key;
 
             $full_weather = json_decode(file_get_contents($api_url));
 
