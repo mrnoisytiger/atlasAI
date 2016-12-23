@@ -12,9 +12,13 @@ function pickConnector() {
         case "smalltalk":
             connector_smallTalk();
             break;
+            
+        case "getStockInfo":
+        	connector_sendToServer();
+        	break;
 
         case "getWeather":
-            connector_getWeather();
+            connector_sendToServer();
             break;
 
         case "onscreenDisplay":

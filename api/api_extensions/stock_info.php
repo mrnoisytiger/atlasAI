@@ -1,6 +1,6 @@
 <?php
 
-	function extension_stockInfo($intentObject) {
+	function extension_stockInfo($intentObject, $is_Slack) {
 
 		// Set Variables from intentObject		
 		$intentObjectResults = $intentObject['result']['parameters'];
@@ -20,7 +20,7 @@
 		$stock_full_results = json_decode($stock_full_results, true);
 		
 		// If the user inputs a stock name instead of ticker symbol, lookup list of possible companies and symbosl and return that instead in a nicely formatted list
-		if ( !empty($stock_full_results['Message'])  ) {
+		if ( !empty($stock_full_results['Message']) && $is_Slack == true ) {
 			// Lookup the stock symbol
 			$stock_symbols = file_get_contents('http://dev.markitondemand.com/MODApis/Api/v2/Lookup/json?input=' . htmlspecialchars(urlencode($stock_name)));
 			$stock_symbols = json_decode($stock_symbols);
@@ -69,6 +69,10 @@
 			// Return an array with Output and TRUE if an attachment is necessary
 			return array($company_list, true);
 			
+		} elseif ( !empty($stock_full_results['Message']) && $is_Slack == false ) {
+			
+			return "It appears that " . $stock_name . " is not a valid ticker symbol. Please use a valid ticker symbol instead.";
+			
 		} else { // The Stock Quote info lookup was successful. 
 				// Set Name Mappings from NLP to API
 				$api_mappings = array(
@@ -80,7 +84,7 @@
 					'high' => 'High',
 					'low' => 'Low',
 					'opening' => 'Open',
-					'changeYTD' => 'ChangeYTD',
+					'changeYTD' => 'ChangePercentYTD',
 				);
 				
 				// Set Name Mappings from NLP to text output
@@ -93,15 +97,23 @@
 					'high' => 'high for the day',
 					'low' => 'low for the day',
 					'opening' => 'opening price for today',
-					'changeYTD' => 'year-to-date change',
+					'changeYTD' => 'year-to-date percent change',
 				);
 				
 				// Set Array for types which take a dollar value
-				$dollar_types = array( 'price', 'change', 'market cap', 'high', 'low', 'opening', 'changeYTD');
+				$dollar_types = array( 'price', 'change', 'market cap', 'high', 'low', 'opening');
 				// Set Array for types which take a dollar value
-				$percentage_types = array( 'pchange' );
+				$percentage_types = array( 'pchange', 'changeYTD' );
 				// Set Array for types which take are in "shares"
 				$shares_types = array( 'volume' );
+				
+				// Round ridiculously big numbers (volume, market cap) to the nearest ten thousand. 
+				// NOTE THAT & IN THE FOREACH LOOP. SINCE WE WANT TO CHANGE THE ARRAY VALUE DIRECTLY, WE NEED TO PASS BY REFERENCE, NOT PASS BY VALUE
+				foreach ( $stock_full_results as &$info ) {
+					if ( ctype_digit($info) && strlen($info) >= 6 ) { // A ridiculously large number is defined as 6 digits
+						$info = round($info, -4); // Turn the last 4 into 0's
+					}
+				}
 				
 			// If NLP didn't find a request for stock information
 			if ( sizeof($stock_info_type) == 0 ) {
@@ -115,16 +127,22 @@
 				
 				// Provide units for the response based on the stock information requested
 				if ( in_array($stock_info_type, $dollar_types)  ) {
-					$result = 'The ' . $text_mapped_info_type . ' for ' . $stock_name . ' is $'. number_format($stock_full_results[$api_mapped_info_type], 2) . ".";
+					$result = 'The ' . $text_mapped_info_type . ' for ' . $stock_full_results['Name'] . ' is $'. number_format($stock_full_results[$api_mapped_info_type], 2) . ".";
 				} elseif ( in_array($stock_info_type, $percentage_types) ) {
-					$result = 'The ' . $text_mapped_info_type . ' for ' . $stock_name . ' is '. number_format($stock_full_results[$api_mapped_info_type], 2) . "%.";
+					$result = 'The ' . $text_mapped_info_type . ' for ' . $stock_full_results['Name'] . ' is '. number_format($stock_full_results[$api_mapped_info_type], 2) . "%.";
 				} elseif ( in_array($stock_info_type, $shares_types) ) {
-					$result = 'The ' . $text_mapped_info_type . ' for ' . $stock_name . ' is '. number_format($stock_full_results[$api_mapped_info_type], 0) . " shares.";
+					$result = 'The ' . $text_mapped_info_type . ' for ' . $stock_full_results['Name'] . ' is '. number_format($stock_full_results[$api_mapped_info_type], 0) . " shares.";
 				}
 			
-				return array($result, false);
+				// If it is Slack calling Atlas from a webhook, return as an array, specifying text output. Otherwise, just return text normally.
+				if ( $is_Slack == true ) {
+					return array($result, false);	
+				} else {
+					return $result;
+				}
+				
 			
-			} elseif ( sizeof($stock_info_type) > 1 ) { // If the user requests more than one type of information, give them a Slack attachment with the info.
+			} elseif ( sizeof($stock_info_type) > 1 && $is_Slack == true ) { // If the user requests more than one type of information from the Slack webhook, give them a Slack attachment with the info.
 				
 				// Create a Slack attachment with fields ready to be populated.
 				$stock_info_list = array(
@@ -167,6 +185,38 @@
 				}
 			
 				return array($stock_info_list, true);
+				
+			} elseif ( sizeof($stock_info_type) > 1 && $is_Slack == false ) { // If the user requests more than one type of information AND IS NOT COMING FROM SLACK, give them a long sentence with all the info.
+			
+				$result_text = "For " . $stock_full_results['Name'] . ", the";
+				
+				$last_type = end(array_keys($array));
+				foreach( $stock_info_type as $type ) {
+
+					// Convert NLP info type into API info type
+					$api_mapped_info_type = $api_mappings[$type];
+					// Convert NLP info type into human grammer text
+					$text_mapped_info_type = $text_mappings[$type];
+					
+					// Append units based on necessary units
+					if ( in_array($type, $dollar_types)  ) {
+						$result = "$" . number_format($stock_full_results[$api_mapped_info_type], 2);
+					} elseif ( in_array($type, $percentage_types) ) {
+						$result = number_format($stock_full_results[$api_mapped_info_type], 2) . "%";
+					} elseif ( in_array($type, $shares_types) ) {
+						$result = number_format($stock_full_results[$api_mapped_info_type], 0) . " shares";
+					}
+	
+					if ( $type !== $last_type ) {
+						$result_text .= $text_mapped_info_type . " is " . $result . ", ";	
+					} else {
+						$result_text .= "and " . $text_mapped_info_type . " is " . $result . ".";
+					}
+
+				}
+				
+				return $result_text;
+			
 			}
 		}
 		

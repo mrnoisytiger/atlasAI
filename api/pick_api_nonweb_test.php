@@ -44,17 +44,6 @@
 	$timezone = "America/Los_Angeles";
 	$lang = "en";
 	
-	// Check to make sure token does come from the correct Slack webhook
-	if ( $token !== $slack_token ) {
-		return "Token Incorrect";
-		die;
-	}
-	
-	if ( $_GET['debug'] !== 'true' && !in_array($user_id, $valid_user_ids)) {
-		return "User not Authenticated";
-		die;
-	}
-	
 	// Send text to process by API.AI, similar to client-side processing. Slack text is inserted via webhook so it is not processed and has to be processed by the server-side script.
 	$process_data = array(
 		"query" => $text,
@@ -109,12 +98,7 @@
             break;
             
         case "getStockInfo":
-        	$result = extension_stockInfo($intentObject, true); // Since the extension uses extensions, it's important to differentiate requests from the WebUI and the Slack interface. 
-        	if ( $result[1] == true ) {
-        		$result = (string)slackOutput($result[0], "attachment");
-        	} else {
-        		$result = (string)slackOutput($result[0], "text");
-        	}
+        	$result = extension_stockInfo($intentObject, false); // Since the extension uses extensions, it's important to differentiate requests from the WebUI and the Slack interface. 
         	echo $result;
         	break;
         	

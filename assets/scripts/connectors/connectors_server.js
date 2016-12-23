@@ -1,9 +1,9 @@
-function connector_getWeather() {
+function connector_sendToServer() {
 
     $.ajax({
 
         type: "POST",
-        url: "https://demo.ide.homedrop.tk/atlas/api/pick_api.php",
+        url: "https://demo.ide.homedrop.org/atlas/api/pick_api.php",
         data: {
             intentObject: intentObject,
         },
