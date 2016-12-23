@@ -16,6 +16,8 @@ The API Extensions often communicate with third-party API's which require authen
 
 This project has finally been made open-source because I'm tired of managing my own development server. Also because I wanted to try out Codaid which is pretty pointless if I have a development server already. 
 
+Yea yea I know I'm not using branches. I don't care. I'm not deploying anything. I'm not working in a group. I'm testing straight from dev because it's faster. The demo is coming directly from the dev server. If I had a deployment server, I would think about branching. I don't, so I don't branch. I'll think about it.
+
 --- 
 
 # Setup
