@@ -5,12 +5,6 @@
 		// Set Variables from intentObject		
 		$intentObjectResults = $intentObject['result']['parameters'];
 		
-		if ( $intentObjectResults['date'] == "" ) {
-			$stock_date = "none";
-		} else {
-			$stock_date = htmlspecialchars($intentObjectResults['date']);
-		}
-		
 		$stock_name = htmlspecialchars_decode($intentObjectResults['stockName']);
 		
 		$stock_info_type = $intentObjectResults['stockInfoType'];
