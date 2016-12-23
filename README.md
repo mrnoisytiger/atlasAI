@@ -46,7 +46,6 @@ This example assumes you have a folder called "atlas" with this repo inside of "
     <Directory /var/www/html/atlas/api/config>
         Order deny,allow
         Deny from all
-        Redirect /atlas/api/config/ /atlas/
     </Directory>
 </VirtualHost>
 ```
