@@ -1,11 +1,11 @@
 <?php
 
-	function extension_stockInfo($intentObject, $is_Slack) {
+	function extension_stockInfo($intentObject, $is_Slack, $listNumber) {
 
 		// Set Variables from intentObject		
 		$intentObjectResults = $intentObject['result']['parameters'];
 		
-		$stock_name = htmlspecialchars_decode($intentObjectResults['stockName']);
+		$stock_name = htmlspecialchars_decode($intentObjectResults['stockName'][$listNumber]);
 		
 		$stock_info_type = $intentObjectResults['stockInfoType'];
 		
