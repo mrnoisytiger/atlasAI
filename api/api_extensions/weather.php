@@ -5,6 +5,7 @@ require 'language_structures/weather_conditions.php';
 
     function extension_weather($intentObject) {
     	
+    	$envvars = parse_ini_file( "config/config.ini" );
     	$api_key = $envvars['OPENWEATHERMAP_KEY'];
 
         $intentObjectResults = $intentObject['result']['parameters'];
