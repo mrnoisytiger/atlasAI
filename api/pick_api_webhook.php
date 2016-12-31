@@ -114,11 +114,10 @@
         	foreach ( $intentObject['result']['parameters']['stockName'] as $stockName ) {
         		$result = extension_stockInfo($intentObject, true, $listNumber); // Since the extension uses extensions, it's important to differentiate requests from the WebUI and the Slack interface. 
 	        	if ( $result[1] == true ) {
-	        		$result = (string)slackOutput($result[0], "attachment");
+	        		slackOutput($result[0], "attachment");
 	        	} else {
-	        		$result = (string)slackOutput($result[0], "text");
+	        		slackOutput($result[0], "text");
 	        	}
-	        	echo $result;
 				$listNumber++;
         	}
         	break;        	
