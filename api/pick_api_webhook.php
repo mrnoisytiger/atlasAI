@@ -105,7 +105,6 @@
 			break;
 			
         case "getWeather":
-            
             $listNumber = 0;
             foreach ( $intentObject['result']['parameters']['geo-city'] as $location ) {
            		$result = extension_weather($intentObject, $listNumber);
