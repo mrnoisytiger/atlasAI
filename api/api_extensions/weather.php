@@ -3,7 +3,7 @@
 // Requires
 require 'language_structures/weather_conditions.php';
 
-    function extension_weather($intentObject) {
+    function extension_weather($intentObject, $listNumber) {
     	
     	$envvars = parse_ini_file( "config/config.ini" );
     	$api_key = $envvars['OPENWEATHERMAP_KEY'];
@@ -13,7 +13,7 @@ require 'language_structures/weather_conditions.php';
         if ( $intentObjectResults['geo-city'] == "" ) {
             $weather_location = "Los Angeles";
         } else {
-            $weather_location = $intentObject['result']['parameters']['geo-city'];
+            $weather_location = $intentObject['result']['parameters']['geo-city'][$listNumber];
         }
 
         if ( $intentObjectResults['date'] == "" ) {
@@ -61,7 +61,7 @@ require 'language_structures/weather_conditions.php';
 
                 case "conditions":
                     $conditions = $full_weather->list[0]->weather[0]->id;
-                    return language_weather_conditions( $conditions );
+                    return language_weather_conditions( $conditions ) . " in " . $weather_location . ".";
                     break;
 
                 default:

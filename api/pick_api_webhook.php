@@ -107,10 +107,11 @@
         case "getWeather":
             
             $listNumber = 0;
-            foreach ( $intentObject['result']['parameters']['stockName'] as $location ) {
-           		$result = extension_weather($intentObject);
+            foreach ( $intentObject['result']['parameters']['geo-city'] as $location ) {
+           		$result = extension_weather($intentObject, $listNumber);
+           		$listNumber++;
+    			slackOutput($result);
             }
-            echo slackOutput($result);
             break;
             
         case "getStockInfo":
