@@ -51,17 +51,17 @@ require 'language_structures/weather_conditions.php';
 
                 case "temperature":
                     $temp = round($full_weather->list[0]->main->temp);
-                    return "The current temperature in $weather_location is $temp degrees.";
+                    return "The current temperature in _" . $weather_location . "_ is $temp degrees.";
                     break;
 
                 case "pressure":
                     $pressure = $full_weather->list[0]->main->pressure;
-                    return "The current pressure in $weather_location is $pressure.";
+                    return "The current pressure in _" . $weather_location . "_ is $pressure.";
                     break;
 
                 case "conditions":
                     $conditions = $full_weather->list[0]->weather[0]->id;
-                    return language_weather_conditions( $conditions ) . " in " . $weather_location . ".";
+                    return language_weather_conditions( $conditions ) . " in _" . $weather_location . "_.";
                     break;
 
                 default:
