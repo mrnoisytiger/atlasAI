@@ -24,7 +24,7 @@
 		
         case "getWeather":
             $result = extension_weather($intentObject);
-            echo $result;
+            echo str_replace("_", "", $result); // Remove the underscores used for Slack formatting
             break;
 
 		case "input.unknown";
