@@ -94,6 +94,18 @@
 					'changeYTD' => 'year-to-date percent change',
 				);
 				
+				$label_mappings =  array(
+					'price' => 'Price',
+					'change' => 'Change',
+					'pchange' => '% Change',
+					'market cap' => 'Market Cap',
+					'volume' => 'Volume',
+					'high' => 'Daily High',
+					'low' => 'Daily Low',
+					'opening' => 'Opening Price',
+					'changeYTD' => '% Change (YTD)',
+				);
+				
 				// Set Array for types which take a dollar value
 				$dollar_types = array( 'price', 'change', 'market cap', 'high', 'low', 'opening');
 				// Set Array for types which take a dollar value
@@ -112,7 +124,7 @@
 			// If NLP didn't find a request for stock information
 			if ( sizeof($stock_info_type) == 0 ) {
 				return "Please specify information you would like to know.";
-			} elseif ( sizeof($stock_info_type) == 1 ) { // If the user requests only a single type of information, simply give them some text
+			} elseif ( sizeof($stock_info_type) == 1 && $stock_info_type[0] !== "allInfo" ) { // If the user requests only a single type of information, simply give them some text
 				$stock_info_type = $stock_info_type[0];
 				// Covert the NLP stock info type into API's format
 				$api_mapped_info_type = $api_mappings[$stock_info_type];
@@ -136,6 +148,66 @@
 				}
 				
 			
+			} elseif ( sizeof($stock_info_type) == 1 && $stock_info_type[0] == "allInfo" ) { // If the user requests a vague amount of information or all information from Slack
+				$stock_info_type = array_keys($api_mappings);
+				#$stock_info_type = array('price', 'change');
+				
+				// Create a Slack attachment with fields ready to be populated.
+				$stock_info_list = array(
+					array(
+						'fallback' => "Requested Data for " . $stock_name,
+						'pretext' => "Here's the information you requested for _" . $stock_full_results['Name'] . "_",
+						'fields' => array(),
+						'color' => "#6AFB66",
+						"mrkdwn_in"=> ["text", "pretext", "fields"],
+					),
+				);
+				
+				// For each piece of info requested in the array, iterate through it and insert it into the Slack Attachment as a field
+				foreach( $stock_info_type as $type ) {
+
+					// Convert NLP info type into API info type
+					$api_mapped_info_type = $api_mappings[$type];
+					// Convert NLP info type into human grammer text
+					$text_mapped_info_type = $text_mappings[$type];
+					
+					// Append units based on necessary units and summarize large numbers
+					if ( in_array($type, $dollar_types)  && $type !== "market cap" ) {
+						$result = "$ " . number_format($stock_full_results[$api_mapped_info_type], 2);
+					} elseif ( in_array($type, $dollar_types) && $type == "market cap" ) {
+						$number = number_format($stock_full_results[$api_mapped_info_type], 0);
+						if ( $stock_full_results[$api_mapped_info_type] <= 1000000 ) {
+							$result = "$ " . $number;
+						} elseif ( $stock_full_results[$api_mapped_info_type] > 1000000 && $stock_full_results[$api_mapped_info_type] <= 1000000000) {
+							$number = substr($number, 0, -8);
+							$result = "$ " . $number . " Million";
+						} elseif ( $stock_full_results[$api_mapped_info_type] > 1000000000 && $stock_full_results[$api_mapped_info_type] <= 1000000000000 ) {
+							$number = substr($number, 0, -12);
+							$result = "$ " . $number . " Billion";
+						} elseif ( $stock_full_results[$api_mapped_info_type] > 1000000000000 ) {
+							$number = substr($number, 0, -16);
+							$result = "$ " . $number . " Trillion";
+						}
+					} elseif ( in_array($type, $percentage_types) ) {
+						$result = number_format($stock_full_results[$api_mapped_info_type], 2) . "%";
+					} elseif ( in_array($type, $shares_types) ) {
+						$result = number_format($stock_full_results[$api_mapped_info_type], 0) . " shares";
+					}
+	
+					// Set up a field with the correct info. Capitalize the first letter of the Title string
+					$type_info = array(
+						'title' => $label_mappings[$type],
+						'value' => $result,
+						'short' => true,
+					);
+					
+					// Add the field into the main array
+					array_push( $stock_info_list[0]['fields'], $type_info );
+
+				}
+			
+				return array($stock_info_list, true);
+				
 			} elseif ( sizeof($stock_info_type) > 1 && $is_Slack == true ) { // If the user requests more than one type of information from the Slack webhook, give them a Slack attachment with the info.
 				
 				// Create a Slack attachment with fields ready to be populated.
@@ -159,7 +231,21 @@
 					
 					// Append units based on necessary units
 					if ( in_array($type, $dollar_types)  ) {
-						$result = "$" . number_format($stock_full_results[$api_mapped_info_type], 2);
+						$result = "$ " . number_format($stock_full_results[$api_mapped_info_type], 2);
+					} elseif ( in_array($type, $dollar_types) && $type == "market cap" ) {
+						$number = number_format($stock_full_results[$api_mapped_info_type], 0);
+						if ( $stock_full_results[$api_mapped_info_type] <= 1000000 ) {
+							$result = "$ " . $number;
+						} elseif ( $stock_full_results[$api_mapped_info_type] > 1000000 && $stock_full_results[$api_mapped_info_type] <= 1000000000) {
+							$number = substr($number, 0, -8);
+							$result = "$ " . $number . " Million";
+						} elseif ( $stock_full_results[$api_mapped_info_type] > 1000000000 && $stock_full_results[$api_mapped_info_type] <= 1000000000000 ) {
+							$number = substr($number, 0, -12);
+							$result = "$ " . $number . " Billion";
+						} elseif ( $stock_full_results[$api_mapped_info_type] > 1000000000000 ) {
+							$number = substr($number, 0, -16);
+							$result = "$ " . $number . " Trillion";
+						}
 					} elseif ( in_array($type, $percentage_types) ) {
 						$result = number_format($stock_full_results[$api_mapped_info_type], 2) . "%";
 					} elseif ( in_array($type, $shares_types) ) {
@@ -168,7 +254,7 @@
 	
 					// Set up a field with the correct info. Capitalize the first letter of the Title string
 					$type_info = array(
-						'title' => ucfirst($type),
+						'title' => $label_mappings[$type],
 						'value' => $result,
 						'short' => true,
 					);
@@ -192,19 +278,27 @@
 					// Convert NLP info type into human grammer text
 					$text_mapped_info_type = $text_mappings[$type];
 					
-					// Append units based on necessary units
-					if ( in_array($type, $dollar_types)  ) {
+					// Append units based on necessary units and summarize large numbers
+					if ( in_array($type, $dollar_types)  && $type !== "market cap" ) {
 						$result = "$" . number_format($stock_full_results[$api_mapped_info_type], 2);
+					} elseif ( in_array($type, $dollar_types) && $type == "market cap" ) {
+						$number = number_format($stock_full_results[$api_mapped_info_type], 0);
+						if ( $stock_full_results[$api_mapped_info_type] <= 1000000 ) {
+							$result = "$ " . $number;
+						} elseif ( $stock_full_results[$api_mapped_info_type] > 1000000 && $stock_full_results[$api_mapped_info_type] <= 1000000000) {
+							$number = substr($number, 0, -8);
+							$result = "$ " . $number . " Million";
+						} elseif ( $stock_full_results[$api_mapped_info_type] > 1000000000 && $stock_full_results[$api_mapped_info_type] <= 1000000000000 ) {
+							$number = substr($number, 0, -12);
+							$result = "$ " . $number . " Billion";
+						} elseif ( $stock_full_results[$api_mapped_info_type] > 1000000000000 ) {
+							$number = substr($number, 0, -16);
+							$result = "$ " . $number . " Trillion";
+						}
 					} elseif ( in_array($type, $percentage_types) ) {
 						$result = number_format($stock_full_results[$api_mapped_info_type], 2) . "%";
 					} elseif ( in_array($type, $shares_types) ) {
 						$result = number_format($stock_full_results[$api_mapped_info_type], 0) . " shares";
-					}
-	
-					if ( $type !== $last_type ) {
-						$result_text .= $text_mapped_info_type . " is " . $result . ", ";	
-					} else {
-						$result_text .= "and " . $text_mapped_info_type . " is " . $result . ".";
 					}
 
 				}

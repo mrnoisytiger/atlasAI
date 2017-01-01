@@ -4,8 +4,6 @@
 		$envvars = parse_ini_file( "config/config.ini" );
 		$response_url = $envvars['SLACK_RESPONSE_URL'];
 		
-		echo $response_url;
-		
 		if ( $type == "text" ) {
 			$slack_output = array(
             	'text' => $output,
